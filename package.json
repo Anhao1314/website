@@ -1,0 +1,13 @@
+{
+  "name": "flowcredit-website",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node scripts/check.js",
+    "build": "node scripts/build-static.js",
+    "dev:mock": "node test/local-e2e.js"
+  }
+}
