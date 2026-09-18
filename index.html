@@ -1,0 +1,1647 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>FlowCredit — On-chain Risk Intelligence</title>
+
+    <meta
+      name="description"
+      content="Deterministic, explainable and verifiable risk intelligence for on-chain businesses."
+    />
+
+    <style>
+      :root {
+        --bg: #05070a;
+        --bg-soft: #090d12;
+        --surface: rgba(13, 19, 27, 0.72);
+        --surface-hover: rgba(17, 26, 37, 0.92);
+        --border: rgba(255, 255, 255, 0.09);
+        --border-bright: rgba(94, 234, 212, 0.28);
+
+        --text: #f4f7fb;
+        --muted: #8b98a8;
+        --muted-light: #b8c2ce;
+
+        --cyan: #5eead4;
+        --cyan-dark: #17bda5;
+        --blue: #60a5fa;
+        --green: #34d399;
+        --amber: #fbbf24;
+
+        --max-width: 1180px;
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --radius-sm: 11px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at 80% 4%,
+            rgba(45, 212, 191, 0.11),
+            transparent 26rem
+          ),
+          radial-gradient(
+            circle at 10% 28%,
+            rgba(59, 130, 246, 0.08),
+            transparent 25rem
+          ),
+          var(--bg);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .container {
+        width: min(calc(100% - 96px), var(--max-width));
+        margin: 0 auto;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        height: 76px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(5, 7, 10, 0.78);
+        backdrop-filter: blur(18px);
+      }
+
+      .nav {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        width: 168px;
+        height: 48px;
+        overflow: hidden;
+      }
+
+      .brand img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        color: var(--muted-light);
+        font-size: 0.88rem;
+      }
+
+      .nav-links a {
+        transition: color 180ms ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      .nav-action {
+        padding: 10px 17px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.035);
+        font-size: 0.86rem;
+        transition:
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .nav-action:hover {
+        border-color: var(--border-bright);
+        background: rgba(94, 234, 212, 0.07);
+      }
+
+      .hero {
+        position: relative;
+        min-height: calc(100vh - 76px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 92px 0 110px;
+      }
+
+      .hero::after {
+        position: absolute;
+        right: -12%;
+        bottom: 8%;
+        width: 580px;
+        height: 580px;
+        content: "";
+        pointer-events: none;
+        border-radius: 50%;
+        background: rgba(45, 212, 191, 0.04);
+        filter: blur(80px);
+      }
+
+      .hero-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.75fr);
+        align-items: center;
+        gap: 86px;
+        padding-left: 96px;
+        padding-right: 96px;
+      }
+
+      .eyebrow,
+      .section-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--cyan);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .eyebrow::before,
+      .section-label::before {
+        width: 22px;
+        height: 1px;
+        content: "";
+        background: currentColor;
+      }
+
+      .hero h1 {
+        max-width: 720px;
+        margin-top: 25px;
+        font-size: clamp(3.3rem, 6.2vw, 6.4rem);
+        font-weight: 570;
+        line-height: 0.98;
+        letter-spacing: -0.065em;
+      }
+
+      .hero-subtitle {
+        margin-top: 29px;
+        color: var(--text);
+        font-size: clamp(1.15rem, 2vw, 1.5rem);
+        font-weight: 500;
+        letter-spacing: -0.025em;
+      }
+
+      .hero-description {
+        max-width: 680px;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 1.03rem;
+        line-height: 1.82;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 13px;
+        margin-top: 36px;
+      }
+
+      .button {
+        min-height: 50px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 22px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        font-size: 0.91rem;
+        font-weight: 650;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-primary {
+        color: #04110f;
+        background: var(--cyan);
+        box-shadow: 0 12px 34px rgba(45, 212, 191, 0.16);
+      }
+
+      .button-primary:hover {
+        background: #82f5e4;
+      }
+
+      .button-secondary {
+        border-color: var(--border);
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .button-secondary:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .arrow {
+        font-size: 1.05rem;
+      }
+
+      .report-wrap {
+        position: relative;
+      }
+
+      .report-wrap::before {
+        position: absolute;
+        inset: -2px;
+        z-index: -1;
+        content: "";
+        border-radius: 27px;
+        background: linear-gradient(
+          145deg,
+          rgba(94, 234, 212, 0.35),
+          transparent 38%,
+          rgba(96, 165, 250, 0.17)
+        );
+        filter: blur(1px);
+      }
+
+      .report-card {
+        padding: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(
+          145deg,
+          rgba(17, 25, 34, 0.96),
+          rgba(8, 12, 17, 0.95)
+        );
+        box-shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
+      }
+
+      .report-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding-bottom: 23px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .report-overline {
+        color: var(--muted);
+        font-size: 0.69rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .report-title {
+        margin-top: 5px;
+        font-size: 1.08rem;
+        font-weight: 650;
+      }
+
+      .verified-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 10px;
+        border: 1px solid rgba(52, 211, 153, 0.18);
+        border-radius: 999px;
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.07);
+        font-size: 0.67rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .verified-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 10px rgba(52, 211, 153, 0.7);
+      }
+
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .score {
+        min-width: 0;
+        padding: 17px 13px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: rgba(255, 255, 255, 0.022);
+      }
+
+      .score-label {
+        color: var(--muted);
+        font-size: 0.67rem;
+        font-weight: 650;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .score-value {
+        margin-top: 6px;
+        font-size: clamp(1.45rem, 3vw, 2rem);
+        font-weight: 580;
+        letter-spacing: -0.05em;
+      }
+
+      .score-unit {
+        margin-left: 3px;
+        color: var(--muted);
+        font-size: 0.7rem;
+      }
+
+      .grade {
+        color: var(--cyan);
+      }
+
+      .integrity {
+        padding-top: 19px;
+        border-top: 1px solid var(--border);
+      }
+
+      .integrity-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 13px;
+        color: var(--muted-light);
+        font-size: 0.76rem;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .integrity-status {
+        color: var(--green);
+        font-size: 0.7rem;
+      }
+
+      .signal-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .signal {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted-light);
+        font-size: 0.78rem;
+      }
+
+      .signal-icon {
+        width: 17px;
+        height: 17px;
+        display: grid;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 50%;
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+        font-size: 0.62rem;
+      }
+
+      .report-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        margin-top: 22px;
+        padding-top: 17px;
+        border-top: 1px solid var(--border);
+        color: #647181;
+        font-family: monospace;
+        font-size: 0.65rem;
+      }
+
+      section {
+        padding: 112px 0;
+      }
+
+      .section-border {
+        border-top: 1px solid rgba(255, 255, 255, 0.065);
+      }
+
+      .section-heading {
+        max-width: 730px;
+        margin-top: 18px;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        font-weight: 560;
+        line-height: 1.12;
+        letter-spacing: -0.045em;
+      }
+
+      .section-description {
+        max-width: 650px;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.8;
+      }
+
+      .problem {
+        text-align: center;
+      }
+      .problem-text {
+        max-width: 1080px;
+        margin: 0 auto;
+        font-size: clamp(0.95rem, 1.55vw, 1.6rem);
+        font-weight: 500;
+        line-height: 1.45;
+        letter-spacing: -0.02em;
+        text-align: center;
+      }
+
+      .problem-text p {
+        display: block;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .problem-text p + p {
+        margin-top: 14px;
+      }
+
+      .problem-text p:nth-child(2) {
+        color: var(--muted);
+      }
+
+      .problem-text .problem-conclusion {
+        color: var(--cyan);
+        font-weight: 600;
+      }
+
+      @media (max-width: 900px) {
+        .problem-text {
+          font-size: clamp(0.9rem, 2.8vw, 1.25rem);
+        }
+
+        .problem-text p {
+          white-space: normal;
+        }
+      }
+      .problem-conclusion {
+        display: block;
+        margin-top: 27px;
+        color: var(--cyan);
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        margin-top: 62px;
+      }
+
+      .step {
+        position: relative;
+        padding: 0 28px;
+        border-left: 1px solid var(--border);
+      }
+
+      .step:first-child {
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      .step:last-child {
+        padding-right: 0;
+      }
+
+      .step-number {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border-bright);
+        border-radius: 50%;
+        color: var(--cyan);
+        background: rgba(94, 234, 212, 0.06);
+        font-family: monospace;
+        font-size: 0.75rem;
+      }
+
+      .step h3 {
+        margin-top: 23px;
+        font-size: 1rem;
+        font-weight: 650;
+      }
+
+      .step p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.7;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 56px;
+      }
+
+      .info-card {
+        min-height: 205px;
+        display: flex;
+        flex-direction: column;
+        padding: 25px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .info-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(94, 234, 212, 0.19);
+        background: var(--surface-hover);
+      }
+
+      .card-index {
+        color: #667585;
+        font-family: monospace;
+        font-size: 0.73rem;
+      }
+
+      .info-card h3 {
+        margin-top: auto;
+        font-size: 1.06rem;
+        font-weight: 620;
+      }
+
+      .info-card p {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.87rem;
+        line-height: 1.65;
+      }
+
+      .principles {
+        display: grid;
+        grid-template-columns: 0.7fr 1.3fr;
+        gap: 90px;
+        margin-top: 58px;
+      }
+
+      .principle-intro {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.8;
+      }
+
+      .principle-list {
+        border-top: 1px solid var(--border);
+      }
+
+      .principle {
+        display: grid;
+        grid-template-columns: 52px 1fr;
+        gap: 22px;
+        padding: 27px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .principle-icon {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--cyan);
+        background: rgba(94, 234, 212, 0.04);
+        font-family: monospace;
+        font-size: 0.78rem;
+      }
+
+      .principle h3 {
+        font-size: 1.03rem;
+        font-weight: 650;
+      }
+
+      .principle p {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .proof-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 14px;
+        margin-top: 56px;
+      }
+
+      .proof-card {
+        min-height: 310px;
+        padding: 32px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(
+          145deg,
+          rgba(17, 25, 34, 0.86),
+          rgba(8, 12, 17, 0.8)
+        );
+      }
+
+      .proof-card-primary {
+        position: relative;
+        overflow: hidden;
+        border-color: rgba(94, 234, 212, 0.18);
+      }
+
+      .proof-card-primary::after {
+        position: absolute;
+        right: -110px;
+        bottom: -140px;
+        width: 310px;
+        height: 310px;
+        content: "";
+        border-radius: 50%;
+        background: rgba(94, 234, 212, 0.1);
+        filter: blur(55px);
+      }
+
+      .proof-label {
+        color: var(--muted);
+        font-size: 0.71rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .proof-numbers {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        margin-top: 43px;
+      }
+
+      .proof-number {
+        font-size: clamp(4rem, 8vw, 6.5rem);
+        font-weight: 570;
+        line-height: 0.9;
+        letter-spacing: -0.07em;
+      }
+
+      .proof-number:last-child {
+        color: var(--muted);
+      }
+
+      .versus {
+        color: var(--cyan);
+        font-size: 0.79rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .proof-description {
+        position: relative;
+        z-index: 1;
+        max-width: 500px;
+        margin-top: 29px;
+        color: var(--muted-light);
+        font-size: 0.91rem;
+      }
+
+      .demo-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .demo-card h3 {
+        margin-top: 25px;
+        font-size: 1.6rem;
+        font-weight: 550;
+        line-height: 1.25;
+        letter-spacing: -0.035em;
+      }
+
+      .demo-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 21px;
+        border-top: 1px solid var(--border);
+        color: var(--cyan);
+        font-size: 0.9rem;
+        font-weight: 650;
+      }
+
+      .audience-list {
+        margin-top: 55px;
+        border-top: 1px solid var(--border);
+      }
+
+      .audience-item {
+        display: grid;
+        grid-template-columns: 50px 1fr;
+        gap: 25px;
+        align-items: center;
+        padding: 25px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .audience-number {
+        color: var(--cyan);
+        font-family: monospace;
+        font-size: 0.72rem;
+      }
+
+      .audience-item p {
+        color: var(--muted-light);
+        font-size: clamp(1rem, 2vw, 1.2rem);
+      }
+
+      .team-layout {
+        display: grid;
+        grid-template-columns: 0.65fr 1.35fr;
+        gap: 90px;
+        margin-top: 48px;
+      }
+
+      .team-monogram {
+        width: fit-content;
+        min-height: auto;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 1px solid var(--border-bright);
+        border-radius: 28px;
+        overflow: hidden;
+        background: transparent;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+      }
+
+      .team-monogram img {
+        width: 260px;
+        height: 260px;
+        display: block;
+        object-fit: cover;
+        border-radius: 28px;
+      }
+
+      .team-copy {
+        color: var(--muted-light);
+        font-size: clamp(1.1rem, 2.2vw, 1.48rem);
+        line-height: 1.75;
+        letter-spacing: -0.015em;
+      }
+
+      .contact-section {
+        padding-bottom: 72px;
+      }
+
+      .contact-panel {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 60px;
+        align-items: end;
+        padding: 48px;
+        border: 1px solid var(--border-bright);
+        border-radius: var(--radius-lg);
+        background:
+          radial-gradient(
+            circle at 90% 0%,
+            rgba(94, 234, 212, 0.09),
+            transparent 19rem
+          ),
+          rgba(11, 17, 23, 0.8);
+      }
+
+      .contact-panel h2 {
+        max-width: 680px;
+        margin-top: 17px;
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 550;
+        line-height: 1.12;
+        letter-spacing: -0.05em;
+      }
+
+      .contact-links {
+        min-width: 250px;
+        display: grid;
+        gap: 13px;
+      }
+
+      .contact-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted-light);
+        font-size: 0.86rem;
+        transition: color 180ms ease;
+      }
+
+      .contact-link:hover {
+        color: var(--cyan);
+      }
+
+      .contact-link span:last-child {
+        color: var(--cyan);
+      }
+
+      footer {
+        padding: 37px 0 45px;
+        border-top: 1px solid var(--border);
+      }
+
+      .footer-layout {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 48px;
+        align-items: end;
+      }
+
+      .disclaimer {
+        max-width: 840px;
+        color: #677382;
+        font-size: 0.75rem;
+        line-height: 1.75;
+      }
+
+      .copyright {
+        white-space: nowrap;
+        color: #677382;
+        font-size: 0.74rem;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 700ms ease,
+          transform 700ms ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Final homepage refinements */
+      .promo-video {
+        position: relative;
+        padding: 10px;
+        border: 1px solid var(--border-bright);
+        border-radius: 26px;
+        background: linear-gradient(
+          145deg,
+          rgba(17, 25, 34, 0.96),
+          rgba(8, 12, 17, 0.95)
+        );
+        box-shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
+      }
+
+      .promo-video::before {
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        z-index: 2;
+        content: "PRODUCT OVERVIEW · 00:25";
+        padding: 7px 10px;
+        border-radius: 999px;
+        color: var(--cyan);
+        background: rgba(5, 7, 10, 0.76);
+        font: 700 0.67rem/1 monospace;
+        letter-spacing: 0.08em;
+        pointer-events: none;
+      }
+
+      .promo-video video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        border-radius: 17px;
+        background: #070b10;
+      }
+
+      .problem-text {
+        max-width: 980px;
+      }
+
+      .problem-text p {
+        display: block;
+        margin: 0;
+      }
+
+      .problem-text p:nth-child(2) {
+        margin-top: 10px;
+        color: var(--muted);
+      }
+
+      .problem-text .problem-conclusion {
+        margin-top: 30px;
+        color: var(--cyan);
+      }
+
+      .contact-panel {
+        grid-template-columns: minmax(0, 1.22fr) minmax(270px, 0.78fr);
+        align-items: center;
+        gap: 76px;
+        padding: 52px 56px;
+      }
+
+      .contact-panel h2 {
+        max-width: 690px;
+        margin-right: auto;
+      }
+
+      @media (max-width: 960px) {
+        .nav-links {
+          display: none;
+        }
+
+        .hero {
+          min-height: auto;
+        }
+
+        .hero-grid,
+        .principles,
+        .team-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-grid {
+          gap: 62px;
+        }
+
+        .hero-copy {
+          max-width: 760px;
+        }
+
+        .report-wrap {
+          max-width: 610px;
+        }
+
+        .promo-video {
+          max-width: 680px;
+        }
+
+        .steps {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 42px 0;
+        }
+
+        .step:nth-child(3) {
+          padding-left: 0;
+          border-left: 0;
+        }
+
+        .card-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .principles {
+          gap: 42px;
+        }
+
+        .proof-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .team-layout {
+          gap: 38px;
+        }
+
+        .contact-panel {
+          grid-template-columns: 1fr;
+          align-items: start;
+          gap: 42px;
+          padding: 42px;
+        }
+
+        .contact-links {
+          min-width: 0;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .container {
+          width: min(calc(100% - 28px), var(--max-width));
+        }
+
+        .site-header {
+          height: 68px;
+        }
+
+        .nav-action {
+          padding: 8px 13px;
+          font-size: 0.78rem;
+        }
+
+        .hero {
+          padding: 68px 0 82px;
+        }
+
+        .hero h1 {
+          font-size: clamp(3rem, 15vw, 4.5rem);
+        }
+
+        .hero-description {
+          font-size: 0.94rem;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .report-card {
+          padding: 21px;
+        }
+
+        .promo-video video {
+          aspect-ratio: 16 / 11;
+        }
+
+        .score-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .score {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .score-value {
+          margin-top: 0;
+        }
+
+        section {
+          padding: 82px 0;
+        }
+
+        .problem {
+          text-align: left;
+        }
+
+        .steps {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+
+        .step,
+        .step:first-child,
+        .step:nth-child(3) {
+          padding: 25px 0;
+          border-left: 0;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .step:first-child {
+          border-top: 1px solid var(--border);
+        }
+
+        .step h3 {
+          margin-top: 16px;
+        }
+
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .info-card {
+          min-height: 175px;
+        }
+
+        .principle {
+          grid-template-columns: 42px 1fr;
+          gap: 16px;
+        }
+
+        .proof-card {
+          min-height: 280px;
+          padding: 24px;
+        }
+
+        .proof-numbers {
+          gap: 11px;
+        }
+
+        .proof-number {
+          font-size: 4rem;
+        }
+
+        .audience-item {
+          grid-template-columns: 34px 1fr;
+          gap: 13px;
+        }
+        .team-monogram {
+          width: fit-content;
+          min-height: auto;
+          padding: 0;
+        }
+
+        .team-monogram img {
+          width: 220px;
+          height: 220px;
+        }
+        .contact-panel {
+          gap: 42px;
+          padding: 28px 23px;
+        }
+
+        .footer-layout {
+          grid-template-columns: 1fr;
+          gap: 25px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+
+        .button,
+        .info-card {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href="#top" aria-label="FlowCredit home">
+          <img src="assets/img/flowcredit-header-logo.jpg" alt="FlowCredit" />
+        </a>
+
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#how">How it works</a>
+          <a href="#report">Report</a>
+          <a href="#team">Team</a>
+        </nav>
+
+        <a class="nav-action" href="#/demo"> Open demo </a>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- ① Hero -->
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <span class="eyebrow">On-chain risk intelligence</span>
+
+            <h1>Risk intelligence for on-chain businesses.</h1>
+
+            <p class="hero-subtitle">Deterministic. Explainable. Verifiable.</p>
+
+            <p class="hero-description">
+              Submit operating evidence — token metering, revenue structure,
+              compute and customer signals — and get a deterministic,
+              machine-readable risk assessment. Same input, same result.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#/demo">
+                Try the demo
+                <span class="arrow">↗</span>
+              </a>
+
+              <a
+                class="button button-secondary"
+                href="https://outlook.live.com/mail/0/deeplink/compose?to=flowcredit.team%40outlook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Contact us
+              </a>
+            </div>
+          </div>
+
+          <div class="promo-video reveal">
+            <video
+              controls
+              playsinline
+              preload="metadata"
+              poster="assets/img/video-cover.jpg"
+            >
+              <source
+                src="assets/video/flowcredit-promo.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support HTML video.
+            </video>
+          </div>
+        </div>
+      </section>
+
+      <!-- ② Problem -->
+      <section class="problem section-border">
+        <div class="container reveal">
+          <div class="problem-text">
+            <p>On-chain businesses can't prove their operating reality.</p>
+
+            <p>Capital providers can't verify what they can't see.</p>
+
+            <p class="problem-conclusion">
+              FlowCredit turns operating evidence into credit language both
+              sides can trust.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ③ How it works -->
+      <section id="how" class="section-border">
+        <div class="container">
+          <div class="reveal">
+            <span class="section-label">How it works</span>
+            <h2 class="section-heading">
+              Evidence in. Verifiable intelligence out.
+            </h2>
+          </div>
+
+          <div class="steps">
+            <article class="step reveal">
+              <span class="step-number">01</span>
+              <h3>Submit evidence</h3>
+              <p>
+                Token metering, revenue structure, compute and customer signals.
+              </p>
+            </article>
+
+            <article class="step reveal">
+              <span class="step-number">02</span>
+              <h3>Deterministic scoring</h3>
+              <p>Rules-engine core; no LLM in the authoritative path.</p>
+            </article>
+
+            <article class="step reveal">
+              <span class="step-number">03</span>
+              <h3>Verifiable report</h3>
+              <p>Every score ships with a field-level evidence chain.</p>
+            </article>
+
+            <article class="step reveal">
+              <span class="step-number">04</span>
+              <h3>Decision support</h3>
+              <p>
+                Built for capital providers making their own credit decisions.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ④ What's in the report -->
+      <section id="report" class="section-border">
+        <div class="container">
+          <div class="reveal">
+            <span class="section-label">What's in the report</span>
+            <h2 class="section-heading">
+              A structured view of operating credibility.
+            </h2>
+
+            <p class="section-description">
+              Each assessment combines standardized scores, integrity checks and
+              an evidence trail that can be reviewed independently.
+            </p>
+          </div>
+
+          <div class="card-grid">
+            <article class="info-card reveal">
+              <span class="card-index">01</span>
+              <h3>Evidence readiness</h3>
+              <p>
+                Whether the submitted evidence is sufficient to support an
+                assessment.
+              </p>
+            </article>
+
+            <article class="info-card reveal">
+              <span class="card-index">02</span>
+              <h3>TAI · 0–100</h3>
+              <p>
+                AI Token Activity Index measuring token-based operating
+                activity.
+              </p>
+            </article>
+
+            <article class="info-card reveal">
+              <span class="card-index">03</span>
+              <h3>CCI · 0–1000</h3>
+              <p>
+                Compute Credibility Index measuring the credibility of
+                compute-related signals.
+              </p>
+            </article>
+
+            <article class="info-card reveal">
+              <span class="card-index">04</span>
+              <h3>Risk grade</h3>
+              <p>
+                A consolidated enterprise risk classification based on the
+                submitted evidence.
+              </p>
+            </article>
+
+            <article class="info-card reveal">
+              <span class="card-index">05</span>
+              <h3>Integrity signals</h3>
+              <p>
+                Signals indicating sybil activity, manipulation or inconsistent
+                operating evidence.
+              </p>
+            </article>
+
+            <article class="info-card reveal">
+              <span class="card-index">06</span>
+              <h3>Required actions</h3>
+              <p>
+                Missing evidence and prioritized actions needed to strengthen
+                the profile.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ⑤ Why FlowCredit -->
+      <section class="section-border">
+        <div class="container">
+          <div class="reveal">
+            <span class="section-label">Why FlowCredit</span>
+            <h2 class="section-heading">
+              Designed for scrutiny, not black-box automation.
+            </h2>
+          </div>
+
+          <div class="principles">
+            <p class="principle-intro reveal">
+              The authoritative assessment is produced through a deterministic
+              rules engine. FlowCredit provides transparent decision support
+              while institutions retain control of their own credit decisions.
+            </p>
+
+            <div class="principle-list">
+              <article class="principle reveal">
+                <span class="principle-icon">=</span>
+                <div>
+                  <h3>Same input, same result</h3>
+                  <p>
+                    Deterministic engine; the authoritative result requires no
+                    LLM.
+                  </p>
+                </div>
+              </article>
+
+              <article class="principle reveal">
+                <span class="principle-icon">01</span>
+                <div>
+                  <h3>Explainable</h3>
+                  <p>Every score gives its reasons.</p>
+                </div>
+              </article>
+
+              <article class="principle reveal">
+                <span class="principle-icon">✓</span>
+                <div>
+                  <h3>Independently verifiable</h3>
+                  <p>A field-level evidence chain sits behind every report.</p>
+                </div>
+              </article>
+
+              <article class="principle reveal">
+                <span class="principle-icon">B2B</span>
+                <div>
+                  <h3>Enterprise subjects only</h3>
+                  <p>No consumer scoring.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ⑦ Who it's for -->
+      <section class="section-border">
+        <div class="container">
+          <div class="reveal">
+            <span class="section-label">Who it's for</span>
+            <h2 class="section-heading">
+              Infrastructure for enterprise risk assessment.
+            </h2>
+          </div>
+
+          <div class="audience-list">
+            <div class="audience-item reveal">
+              <span class="audience-number">01</span>
+              <p>
+                Institutional capital providers evaluating AI-native and
+                on-chain enterprises
+              </p>
+            </div>
+
+            <div class="audience-item reveal">
+              <span class="audience-number">02</span>
+              <p>
+                PayFi and stablecoin payment providers underwriting merchant
+                risk
+              </p>
+            </div>
+
+            <div class="audience-item reveal">
+              <span class="audience-number">03</span>
+              <p>RWA issuers screening underlying operators</p>
+            </div>
+
+            <div class="audience-item reveal">
+              <span class="audience-number">04</span>
+              <p>
+                AI-native businesses preparing verifiable operating profiles
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ⑧ Team -->
+      <section id="team" class="section-border">
+        <div class="container">
+          <div class="reveal">
+            <span class="section-label">Team</span>
+            <h2 class="section-heading">
+              Built across risk, engineering and on-chain infrastructure.
+            </h2>
+          </div>
+
+          <div class="team-layout">
+            <div class="team-monogram reveal" aria-hidden="true">
+              <img
+                src="assets/img/flowcredit-icon-logo.jpg"
+                alt="FlowCredit icon logo"
+              />
+            </div>
+
+            <p class="team-copy reveal">
+              FlowCredit is built by a multidisciplinary team working across
+              deterministic risk-model design, evidence architecture, on-chain
+              data engineering and institutional product delivery. The team
+              combines model and rules-engine development, machine-readable
+              report infrastructure, product implementation and market-facing
+              research to create verifiable risk intelligence for AI-native and
+              on-chain enterprises.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ⑨ Contact -->
+      <section id="contact" class="contact-section section-border">
+        <div class="container">
+          <div class="contact-panel reveal">
+            <div>
+              <span class="section-label">Contact</span>
+              <h2>Explore FlowCredit or discuss an institutional use case.</h2>
+            </div>
+
+            <div class="contact-links">
+              <a
+                class="contact-link"
+                href="https://outlook.live.com/mail/0/deeplink/compose?to=flowcredit.team%40outlook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Email</span>
+                <span>↗</span>
+              </a>
+
+              <a
+                class="contact-link"
+                href="https://x.com/FlowCredit90AI"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>X · @FlowCredit90AI</span>
+                <span>↗</span>
+              </a>
+
+              <a
+                class="contact-link"
+                href="https://github.com/Anhao1314/flowcredit"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>GitHub</span>
+                <span>↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-layout">
+        <p class="disclaimer">
+          FlowCredit provides decision support only. It is not an automated
+          lending decision, a PD/expected-loss estimate, investment advice, or
+          an audit opinion. FlowCredit assesses enterprise subjects only — no
+          consumer scoring.
+        </p>
+
+        <p class="copyright">© 2026 FlowCredit Team</p>
+      </div>
+    </footer>
+
+    <script>
+      const revealItems = document.querySelectorAll(".reveal");
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            threshold: 0.12,
+            rootMargin: "0px 0px -35px 0px",
+          },
+        );
+
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add("visible"));
+      }
+    </script>
+  </body>
+</html>
