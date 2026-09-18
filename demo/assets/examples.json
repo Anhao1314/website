@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "flowcredit.website-demo/v0.1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "FC-SYN-001",
+      "name": "AI Inference Provider",
+      "prompt": "请帮我评估一家 AI 推理服务商的交易对手风险。这家公司主要使用 H100 GPU，最近一个月 GPU 使用量约 4200 小时，月收入约 10 万美元，算力支出约 5.8 万美元。历史还款率约 96%，30 天以上逾期率约 2%，目前有 168 个付费客户，前 5 大客户贡献约 36% 的收入。请根据这些信息给出风险评估，如果信息不足，请明确告诉我还缺哪些数据，不要自行编造",
+      "note": "A synthetic inference provider with supplied repayment and customer data. Two partial dimensions are available; a complete risk rating is not.",
+      "result": {
+        "status": "insufficient-evidence",
+        "presentation": {
+          "assessmentStatus": "limited",
+          "decisionStatus": "insufficient-evidence",
+          "evidenceStrength": "low",
+          "availableScores": {
+            "repayment": 94.3,
+            "customer": 89.9
+          }
+        },
+        "extractedDraft": {
+          "taskType": "inference",
+          "gpuModel": "h100-equivalent",
+          "gpuHours": 4200,
+          "revenueUsd": 100000,
+          "computeSpendUsd": 58000,
+          "repaymentRatePct": 96,
+          "overdue30Pct": 2,
+          "payingCustomers": 168,
+          "top5ConcentrationPct": 36
+        }
+      }
+    },
+    {
+      "id": "FC-SYN-002",
+      "name": "Limited Evidence",
+      "prompt": "We are reviewing an AI inference provider. It reports monthly revenue of $40,000. We do not yet have token usage, GPU hours, repayment history, customer concentration or supporting documents. What information is still needed?",
+      "note": "Only a business type and reported revenue are supplied in this synthetic case. No partial scores are available.",
+      "result": {
+        "status": "insufficient-evidence",
+        "presentation": {
+          "assessmentStatus": "limited",
+          "decisionStatus": "insufficient-evidence",
+          "evidenceStrength": "low",
+          "availableScores": {}
+        },
+        "extractedDraft": {
+          "taskType": "inference",
+          "revenueUsd": 40000
+        }
+      }
+    },
+    {
+      "id": "FC-SYN-003",
+      "name": "Risk Signals",
+      "prompt": "Review a synthetic AI inference provider reporting $60,000 in monthly revenue and $75,000 in compute spend. It reports a 72% repayment rate, 18% of repayments overdue by more than 30 days, 12 paying customers, and 78% of revenue from its top five customers. No supporting documents or operating history have been supplied.",
+      "note": "Reported compute spend exceeds revenue, and the supplied overdue rate and customer concentration warrant further review. These are unverified synthetic observations, not a complete risk rating.",
+      "result": {
+        "status": "insufficient-evidence",
+        "presentation": {
+          "assessmentStatus": "limited",
+          "decisionStatus": "insufficient-evidence",
+          "evidenceStrength": "low",
+          "availableScores": {}
+        },
+        "extractedDraft": {
+          "taskType": "inference",
+          "revenueUsd": 60000,
+          "computeSpendUsd": 75000,
+          "repaymentRatePct": 72,
+          "overdue30Pct": 18,
+          "payingCustomers": 12,
+          "top5ConcentrationPct": 78
+        }
+      }
+    }
+  ]
+}
